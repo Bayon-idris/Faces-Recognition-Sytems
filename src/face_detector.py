@@ -78,3 +78,10 @@ class FaceDetector:
 
         cap.release()
         cv2.destroyAllWindows()
+
+    def detect_bounding_box_on_image_array(self, image):
+
+        rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        faces = self.detector.detect_faces(rgb_image)
+        return faces
+    

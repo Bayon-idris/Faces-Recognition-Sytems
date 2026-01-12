@@ -11,12 +11,11 @@ from utils import dataset_dir
 
 
 class FaceSVMPipeline:
-    dataset_dir = dataset_dir
+    dataset_directory = dataset_dir
     def __init__(self, detector, extractor):
         self.detector = detector
         self.extractor = extractor
         
-
         self.label_encoder = LabelEncoder()
         self.model = Pipeline([
             ("scaler", StandardScaler()),
@@ -27,8 +26,8 @@ class FaceSVMPipeline:
         X = []
         y = []
 
-        for person_name in sorted(os.listdir(self.dataset_dir)):
-            person_dir = os.path.join(self.dataset_dir, person_name)
+        for person_name in sorted(os.listdir(self.dataset_directory)):
+            person_dir = os.path.join(self.dataset_directory, person_name)
 
             if not os.path.isdir(person_dir):
                 continue
@@ -45,7 +44,7 @@ class FaceSVMPipeline:
                 if image is None:
                     continue
 
-                faces = self.detector.detect_bounding_box_on_frame_video(image)
+                faces = self.detector.detect_bounding_box_on_image_array(image)
 
                 if not faces:
                     continue
@@ -61,10 +60,16 @@ class FaceSVMPipeline:
     def train(self):
         X, y = self.load_dataset_embeddings()
 
+        if len(X) == 0:
+            raise RuntimeError(
+                "No faces detected in dataset. Check face detection."
+            )
+
         y_encoded = self.label_encoder.fit_transform(y)
 
         print("Training SVM classifier...")
         self.model.fit(X, y_encoded)
+
 
     def save(self, model_path="svm_face_model.pkl"):
         joblib.dump({

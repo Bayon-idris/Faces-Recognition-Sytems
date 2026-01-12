@@ -1,1 +1,1 @@
-dataset_dir = "data/people_dataset"
+dataset_dir = "D:\\Personal Research\\computer-vision-project\\faces-recognition-system\\data\\people_dataset"
