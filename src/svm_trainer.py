@@ -11,6 +11,7 @@ from utils import dataset_dir
 
 
 class FaceSVMPipeline:
+    
     dataset_directory = dataset_dir
     def __init__(self, detector, extractor):
         self.detector = detector

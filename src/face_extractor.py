@@ -6,6 +6,7 @@ import torch
 
 
 class FaceExtractorAndEncoding:
+    
     def __init__(self, device="CPU"):
         self.device = torch.device("cpu")
 
@@ -30,7 +31,7 @@ class FaceExtractorAndEncoding:
 
     def encode_face_to_embedding(self, face_image):
         """
-        Convertit une image visage en vecteur numérique
+        Convert a face image to a numerical vector (embedding)
         """
         face_resized = cv2.resize(face_image, (160, 160))
 

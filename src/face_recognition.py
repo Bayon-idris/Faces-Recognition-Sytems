@@ -1,12 +1,13 @@
 import cv2
 import joblib
 import numpy as np
-from tkinter import Tk, filedialog
+from tkinter import Tk, filedialog, messagebox
 
 from face_detector import FaceDetector
 from face_extractor import FaceExtractorAndEncoding
 
-
+from tkinter import Tk, filedialog, messagebox
+import cv2
 class FaceRecognitionApp:
     def __init__(self, model_path):
         self.detector = FaceDetector(device="CPU:0")
@@ -71,29 +72,50 @@ class FaceRecognitionApp:
         cap.release()
         cv2.destroyAllWindows()
 
+    
+
     def run_image_dialog(self):
-        root = Tk()
-        root.withdraw()
+        while True:
+            root = Tk()
+            root.withdraw()
 
-        file_path = filedialog.askopenfilename(
-            title="Select an image",
-            filetypes=[("Image files", "*.jpg *.png *.jpeg")]
-        )
+            file_path = filedialog.askopenfilename(
+                title="Select an image",
+                filetypes=[("Image files", "*.jpg *.png *.jpeg")]
+            )
 
-        if not file_path:
-            return
+            if not file_path:
+                # User canceled file selection
+                break
 
-        image = cv2.imread(file_path)
-        results = self.predict_from_image(image)
+            image = cv2.imread(file_path)
+            results = self.predict_from_image(image)
 
-        for r in results:
-            x, y, w, h = r["box"]
-            label = f"{r['name']} ({r['confidence']:.2f})"
+            for r in results:
+                x, y, w, h = r["box"]
+                label = f"{r['name']} ({r['confidence']:.2f})"
 
-            cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 2)
-            cv2.putText(image, label, (x, y - 10),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
+                cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 2)
+                cv2.putText(
+                    image,
+                    label,
+                    (x, y - 10),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.6,
+                    (255, 0, 0),
+                    2
+                )
 
-        cv2.imshow("Face Recognition - Image", image)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+            cv2.imshow("Face Recognition - Image", image)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+
+            continue_test = messagebox.askyesno(
+                "Continue?",
+                "Do you want to test another image?"
+            )
+
+            if not continue_test:
+                break
+
+        root.destroy()

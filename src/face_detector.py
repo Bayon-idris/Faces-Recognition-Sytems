@@ -12,6 +12,9 @@ class FaceDetector:
         self.frame = None
         self.faces = []
 
+    # The detect_bounding_box_on_image and startup_camera_and_analyze methods
+    # are utility functions used to test whether the face detection class
+    # works correctly on predefined images and in real-time using the webcam.
 
     def detect_bounding_box_on_image(self,image_path):
         detector = self.detector
@@ -21,40 +24,7 @@ class FaceDetector:
         result = detector.detect_faces(image)
 
         return result
-
-    def draw_detections(self,image,result):
-        plt.imshow(plot(image, result))
-        plt.show()
-
-
-    def detect_bounding_box_on_frame_video(self, frame):
-        if frame is None:
-            return []
-
-        # IMPORTANT: Convertir BGR (OpenCV) en RGB (MTCNN)
-        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-        try:
-            faces = self.detector.detect_faces(rgb_frame)
-            
-            if not faces:
-                return []
-
-            for face in faces:
-                x, y, w, h = face["box"]
-                conf = face.get("confidence", 0)
-
-                # Dessiner sur le 'frame' original (qui est en BGR pour l'affichage)
-                cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
-                cv2.putText(frame, f"{conf:.2f}", (x, y-10),
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
-            return faces
-
-        except Exception as e:
-            print(f"Erreur lors de la détection : {e}")
-            return []
-
-
+    
     def startup_camera_and_analyze(self):
        
         cap = cv2.VideoCapture(0)
@@ -79,9 +49,47 @@ class FaceDetector:
         cap.release()
         cv2.destroyAllWindows()
 
+    # Display image with detected faces
+    def draw_detections(self,image,result):
+        plt.imshow(plot(image, result))
+        plt.show()
+
+
+    # When using a webcam, frames are captured in BGR format by OpenCV.
+    # However, most face detection models expect images in RGB format.
+    # Therefore, we convert the frame from BGR to RGB before performing face detection.
+    # The webcam provides a continuous stream of frames, not a video file.
+    def detect_bounding_box_on_frame_video(self, frame):
+        if frame is None:
+            return []
+
+        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+        try:
+            faces = self.detector.detect_faces(rgb_frame)
+            
+            if not faces:
+                return []
+
+            for face in faces:
+                x, y, w, h = face["box"]
+                conf = face.get("confidence", 0)
+
+                # Dessiner sur le 'frame' original (qui est en BGR pour l'affichage)
+                cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
+                cv2.putText(frame, f"{conf:.2f}", (x, y-10),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 1)
+            return faces
+
+        except Exception as e:
+            print(f"Erreur lors de la détection : {e}")
+            return []
+
+
     def detect_bounding_box_on_image_array(self, image):
 
         rgb_image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         faces = self.detector.detect_faces(rgb_image)
         return faces
+        
     
