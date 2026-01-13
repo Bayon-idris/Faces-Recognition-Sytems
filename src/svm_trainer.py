@@ -11,7 +11,7 @@ from utils import dataset_dir
 
 
 class FaceSVMPipeline:
-    
+
     dataset_directory = dataset_dir
     def __init__(self, detector, extractor):
         self.detector = detector
@@ -70,7 +70,6 @@ class FaceSVMPipeline:
 
         print("Training SVM classifier...")
         self.model.fit(X, y_encoded)
-
 
     def save(self, model_path="svm_face_model.pkl"):
         joblib.dump({
